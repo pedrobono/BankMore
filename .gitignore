@@ -1,0 +1,29 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+*.log
+
+## Databases
+*.db
+*.db-shm
+*.db-wal
+
+## IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+## Docker
+.env
+
+## OS
+.DS_Store
+Thumbs.db

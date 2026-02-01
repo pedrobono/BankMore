@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  conta-corrente:
+    build:
+      context: ./ContaCorrente
+      dockerfile: Dockerfile
+    container_name: bankmore-conta-corrente
+    ports:
+      - "8081:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/bankmore.db
+      - JwtSettings__SecretKey=${JWT_SECRET:-sua-chave-secreta-super-segura-com-pelo-menos-32-caracteres}
+    volumes:
+      - conta-data:/app/data
+    networks:
+      - bankmore-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  transferencia:
+    build:
+      context: ./Transferencia
+      dockerfile: Dockerfile
+    container_name: bankmore-transferencia
+    ports:
+      - "8082:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/transfers.db
+      - Jwt__Secret=${JWT_SECRET:-sua-chave-secreta-super-segura-com-pelo-menos-32-caracteres}
+      - Jwt__Issuer=BankMore
+      - Jwt__Audience=BankMore
+      - AccountService__BaseUrl=http://conta-corrente:8080
+      - AccountService__TimeoutSeconds=30
+    volumes:
+      - transfer-data:/app/data
+    networks:
+      - bankmore-network
+    restart: unless-stopped
+    depends_on:
+      - conta-corrente
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  conta-data:
+    driver: local
+  transfer-data:
+    driver: local
+
+networks:
+  bankmore-network:
+    driver: bridge

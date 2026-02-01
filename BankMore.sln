@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ContaCorrente", "ContaCorrente", "{F86408A6-F9A6-4820-BA44-E512DE6717AC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{146850C1-55E9-44A2-A951-0FE01084DFC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankMore.ContaCorrente", "ContaCorrente\src\BankMore.ContaCorrente\BankMore.ContaCorrente.csproj", "{40AC9470-8A74-4038-9EA1-A42957DADB85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6DF52AD7-C69C-4EF5-96B1-1F066CE34E8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankMore.ContaCorrente.Tests", "ContaCorrente\tests\BankMore.ContaCorrente.Tests\BankMore.ContaCorrente.Tests.csproj", "{9EE3C522-B6AF-4B90-8798-DFB94186BAAE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transferencia", "Transferencia", "{1C4BD716-7EFF-4C79-AE47-5D457E6FC459}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{39944591-4083-4B33-9592-496EDCB0BBD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankMore.Transferencia", "Transferencia\src\BankMore.Transferencia\BankMore.Transferencia.csproj", "{C08D0B06-9EFA-4481-B535-36CFF159FFDB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C86111FA-E417-4D2C-B3B9-3F7DC13CDEA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankMore.TransferService.Tests", "Transferencia\tests\BankMore.TransferService.Tests\BankMore.TransferService.Tests.csproj", "{7C556B99-DCE0-404D-9C02-C80D7EB5CBB0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40AC9470-8A74-4038-9EA1-A42957DADB85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40AC9470-8A74-4038-9EA1-A42957DADB85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40AC9470-8A74-4038-9EA1-A42957DADB85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40AC9470-8A74-4038-9EA1-A42957DADB85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EE3C522-B6AF-4B90-8798-DFB94186BAAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EE3C522-B6AF-4B90-8798-DFB94186BAAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EE3C522-B6AF-4B90-8798-DFB94186BAAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EE3C522-B6AF-4B90-8798-DFB94186BAAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C08D0B06-9EFA-4481-B535-36CFF159FFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C08D0B06-9EFA-4481-B535-36CFF159FFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C08D0B06-9EFA-4481-B535-36CFF159FFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C08D0B06-9EFA-4481-B535-36CFF159FFDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C556B99-DCE0-404D-9C02-C80D7EB5CBB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C556B99-DCE0-404D-9C02-C80D7EB5CBB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C556B99-DCE0-404D-9C02-C80D7EB5CBB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C556B99-DCE0-404D-9C02-C80D7EB5CBB0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{146850C1-55E9-44A2-A951-0FE01084DFC7} = {F86408A6-F9A6-4820-BA44-E512DE6717AC}
+		{40AC9470-8A74-4038-9EA1-A42957DADB85} = {146850C1-55E9-44A2-A951-0FE01084DFC7}
+		{6DF52AD7-C69C-4EF5-96B1-1F066CE34E8C} = {F86408A6-F9A6-4820-BA44-E512DE6717AC}
+		{9EE3C522-B6AF-4B90-8798-DFB94186BAAE} = {6DF52AD7-C69C-4EF5-96B1-1F066CE34E8C}
+		{39944591-4083-4B33-9592-496EDCB0BBD1} = {1C4BD716-7EFF-4C79-AE47-5D457E6FC459}
+		{C08D0B06-9EFA-4481-B535-36CFF159FFDB} = {39944591-4083-4B33-9592-496EDCB0BBD1}
+		{C86111FA-E417-4D2C-B3B9-3F7DC13CDEA3} = {1C4BD716-7EFF-4C79-AE47-5D457E6FC459}
+		{7C556B99-DCE0-404D-9C02-C80D7EB5CBB0} = {C86111FA-E417-4D2C-B3B9-3F7DC13CDEA3}
+	EndGlobalSection
+EndGlobal
