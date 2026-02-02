@@ -94,6 +94,14 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+// Executar migrations automaticamente
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
+    dbContext.Database.Migrate();
+    Log.Information("Migrations aplicadas com sucesso");
+}
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment()) {
