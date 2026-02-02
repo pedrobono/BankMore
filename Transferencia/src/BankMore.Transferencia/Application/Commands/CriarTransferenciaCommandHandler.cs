@@ -4,6 +4,7 @@ using BankMore.Transferencia.Domain.Entities;
 using TransferenciaEntity = BankMore.Transferencia.Domain.Entities.Transferencia;
 using BankMore.Transferencia.Domain.Exceptions;
 using BankMore.Transferencia.Domain.Repositories;
+using BankMore.Transferencia.Infrastructure.Kafka;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -13,15 +14,18 @@ public class CriarTransferenciaCommandHandler : IRequestHandler<CriarTransferenc
 {
     private readonly ITransferenciaRepository _repository;
     private readonly IContaCorrenteServiceClient _accountService;
+    private readonly IKafkaProducer _kafkaProducer;
     private readonly ILogger<CriarTransferenciaCommandHandler> _logger;
 
     public CriarTransferenciaCommandHandler(
         ITransferenciaRepository repository,
         IContaCorrenteServiceClient accountService,
+        IKafkaProducer kafkaProducer,
         ILogger<CriarTransferenciaCommandHandler> logger)
     {
         _repository = repository;
         _accountService = accountService;
+        _kafkaProducer = kafkaProducer;
         _logger = logger;
     }
 
@@ -74,6 +78,11 @@ public class CriarTransferenciaCommandHandler : IRequestHandler<CriarTransferenc
             // Salvar idempotência
             var requisicao = System.Text.Json.JsonSerializer.Serialize(request);
             await _repository.SaveIdempotenciaAsync(request.IdContaOrigem, request.RequestId, requisicao, "SUCCESS");
+            
+            // Publicar mensagem Kafka de transferência realizada
+            _logger.LogInformation("📤 Publicando mensagem Kafka de transferência realizada...");
+            var kafkaMessage = new { RequestId = request.RequestId, IdContaOrigem = request.IdContaOrigem };
+            await _kafkaProducer.ProduceAsync("transferencias-realizadas", kafkaMessage);
             
             _logger.LogInformation("✅ ========== TRANSFERÊNCIA CONCLUÍDA COM SUCESSO ==========\n");
 

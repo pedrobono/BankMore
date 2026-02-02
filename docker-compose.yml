@@ -1,6 +1,53 @@
 version: '3.8'
 
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: bankmore-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - bankmore-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: bankmore-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    networks:
+      - bankmore-network
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - kafka
+    networks:
+      - bankmore-network
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      echo 'Aguardando Kafka iniciar...'
+      sleep 15
+      
+      echo 'Criando tópicos...'
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic transferencias-realizadas --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic tarifacoes-realizadas --replication-factor 1 --partitions 1
+      
+      echo 'Tópicos criados com sucesso!'
+      kafka-topics --bootstrap-server kafka:29092 --list
+      "
+
   conta-corrente:
     build:
       context: ./ContaCorrente
@@ -12,12 +59,15 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/bankmore.db
-      - JwtSettings__SecretKey=${JWT_SECRET:-sua-chave-secreta-super-segura-com-pelo-menos-32-caracteres}
+      - JwtSettings__SecretKey=${JWT_SECRET:-@VtDDEiunPJkT4yfmg3t1QeGyIRgq3R8}
+      - Kafka__BootstrapServers=kafka:29092
     volumes:
       - conta-data:/app/data
     networks:
       - bankmore-network
     restart: unless-stopped
+    depends_on:
+      - kafka
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
@@ -36,11 +86,12 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/transfers.db
-      - Jwt__Secret=${JWT_SECRET:-sua-chave-secreta-super-segura-com-pelo-menos-32-caracteres}
+      - Jwt__Secret=${JWT_SECRET:-@VtDDEiunPJkT4yfmg3t1QeGyIRgq3R8}
       - Jwt__Issuer=BankMore
       - Jwt__Audience=BankMore
       - AccountService__BaseUrl=http://conta-corrente:8080
       - AccountService__TimeoutSeconds=30
+      - Kafka__BootstrapServers=kafka:29092
     volumes:
       - transfer-data:/app/data
     networks:
@@ -48,6 +99,34 @@ services:
     restart: unless-stopped
     depends_on:
       - conta-corrente
+      - kafka
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  tarifa:
+    build:
+      context: .
+      dockerfile: Tarifa/Dockerfile
+    container_name: bankmore-tarifa
+    ports:
+      - "8083:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/tarifa.db
+      - TarifaSettings__ValorTarifa=2.00
+      - Kafka__BootstrapServers=kafka:29092
+    volumes:
+      - tarifa-data:/app/data
+    networks:
+      - bankmore-network
+    restart: unless-stopped
+    depends_on:
+      - kafka
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
@@ -59,6 +138,8 @@ volumes:
   conta-data:
     driver: local
   transfer-data:
+    driver: local
+  tarifa-data:
     driver: local
 
 networks:

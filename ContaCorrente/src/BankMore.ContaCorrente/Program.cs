@@ -5,14 +5,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MediatR;
 using BankMore.ContaCorrente.Infrastructure.Persistence;
+using BankMore.ContaCorrente.Infrastructure.Kafka;
 using BankMore.ContaCorrente.Application.Commands;
 using Microsoft.OpenApi.Any;
 using BankMore.ContaCorrente.Api.Middleware;
 using BankMore.ContaCorrente.Api.Swagger;
 using BankMore.ContaCorrente.Domain.Repositories;
 using BankMore.ContaCorrente.Infrastructure.Repositories;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
 
 // 1. ADICIONE ESTA LINHA: Registra os serviços necessários para Controllers
 builder.Services.AddControllers();
@@ -54,6 +62,12 @@ builder.Services.AddScoped<IMovimentoRepository, MovimentoRepository>();
 builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssembly(typeof(CriarContaCommand).Assembly);
 });
+
+// Kafka Consumer (não iniciar em testes)
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<TarifacaoConsumer>();
+}
 
 var jwtSecretKey = builder.Configuration["JwtSettings:SecretKey"] ?? Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
 

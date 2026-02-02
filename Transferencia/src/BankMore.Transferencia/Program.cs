@@ -3,6 +3,7 @@ using BankMore.Transferencia.Application.Services;
 using BankMore.Transferencia.Infrastructure.Persistence;
 using BankMore.Transferencia.Infrastructure.ExternalServices;
 using BankMore.Transferencia.Infrastructure.Repositories;
+using BankMore.Transferencia.Infrastructure.Kafka;
 using BankMore.Transferencia.Api.Middleware;
 using BankMore.Transferencia.Domain.Repositories;
 using FluentValidation;
@@ -120,6 +121,9 @@ try
 
     // Repositories
     builder.Services.AddScoped<ITransferenciaRepository>(sp => new TransferenciaRepository(connectionString));
+
+    // Kafka
+    builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
 
     // HttpClient para Account Service
     builder.Services.AddHttpClient<IContaCorrenteServiceClient, ContaCorrenteServiceClient>(client =>

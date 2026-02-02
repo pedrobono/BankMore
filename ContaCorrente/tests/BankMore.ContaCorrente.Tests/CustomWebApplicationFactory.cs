@@ -37,7 +37,8 @@ namespace BankMore.ContaCorrente.Tests.IntegrationTests
                 config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["JwtSettings:SecretKey"] = TestJwtKey,
-                    ["ConnectionStrings:DefaultConnection"] = "Data Source=:memory:"
+                    ["ConnectionStrings:DefaultConnection"] = "Data Source=:memory:",
+                    ["Kafka:Enabled"] = "false"
                 });
             });
 
@@ -49,6 +50,14 @@ namespace BankMore.ContaCorrente.Tests.IntegrationTests
                 if (descriptor != null)
                 {
                     services.Remove(descriptor);
+                }
+
+                // Remover Kafka Consumer em testes
+                var kafkaDescriptor = services.FirstOrDefault(
+                    d => d.ImplementationType?.Name == "TarifacaoConsumer");
+                if (kafkaDescriptor != null)
+                {
+                    services.Remove(kafkaDescriptor);
                 }
 
                 // Remove a configuração anterior do JWT Bearer

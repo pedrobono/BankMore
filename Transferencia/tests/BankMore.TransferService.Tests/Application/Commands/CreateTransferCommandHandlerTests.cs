@@ -3,6 +3,7 @@ using BankMore.Transferencia.Application.DTOs;
 using BankMore.Transferencia.Application.Services;
 using BankMore.Transferencia.Domain.Exceptions;
 using BankMore.Transferencia.Domain.Repositories;
+using BankMore.Transferencia.Infrastructure.Kafka;
 using TransferenciaEntity = BankMore.Transferencia.Domain.Entities.Transferencia;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ public class CreateTransferCommandHandlerTests
 {
     private readonly Mock<ITransferenciaRepository> _repositoryMock;
     private readonly Mock<IContaCorrenteServiceClient> _accountServiceMock;
+    private readonly Mock<IKafkaProducer> _kafkaProducerMock;
     private readonly Mock<ILogger<CriarTransferenciaCommandHandler>> _loggerMock;
     private readonly CriarTransferenciaCommandHandler _handler;
 
@@ -21,8 +23,9 @@ public class CreateTransferCommandHandlerTests
     {
         _repositoryMock = new Mock<ITransferenciaRepository>();
         _accountServiceMock = new Mock<IContaCorrenteServiceClient>();
+        _kafkaProducerMock = new Mock<IKafkaProducer>();
         _loggerMock = new Mock<ILogger<CriarTransferenciaCommandHandler>>();
-        _handler = new CriarTransferenciaCommandHandler(_repositoryMock.Object, _accountServiceMock.Object, _loggerMock.Object);
+        _handler = new CriarTransferenciaCommandHandler(_repositoryMock.Object, _accountServiceMock.Object, _kafkaProducerMock.Object, _loggerMock.Object);
     }
 
     [Fact]
